@@ -1,17 +1,19 @@
 import pandas as pd
 import sys
+from collections import OrderedDict
+
 pd.set_option("display.max_rows", 1000)
 
 df = pd.read_csv(sys.argv[1])
-df1 = df[['Account Name','Certificate Name']].dropna()
-#df1 = df1.drop_duplicates().sort_values('Account Name')
-#df1 = df1.sort_values('Account Name')
-#print(df1)
+df1 = df[['Account Name','Certificate Name']].dropna().sort_values('Account Name')
+
 account = df1['Account Name'].unique()
-fl = {'NCP-5','NCSE-L1','NCSR-L1','NCSR-L2','NCSR-L3'}
+fl = ['NCP-5','NCSE-L1','NCSR-L1','NCSR-L2','NCSR-L3']
 cert_check = {}
 for item in account:
-    cert_check[item] = {'NCP-5':0,'NCSE-L1':0,'NCSR-L1':0,'NCSR-L2':0,'NCSR-L3':0}
+    cert_check[item] = {}
+    for f in fl:
+        cert_check[item][f] = 0 
 
 for index,row in df1.iterrows():
     acc = row['Account Name']
@@ -20,9 +22,13 @@ for index,row in df1.iterrows():
         cert_check[acc][cer] += 1
 #        print(acc,cer,cert_check[acc])
 
-print("Account:","NCP-5:","NCSE-L1:","NCSR-L1:","NCSR-L2:","NCSR-L3:")
+print("Account",end=":")
+for f in fl:
+    print(f,end=":")
+print("")
+
 for key in cert_check.keys():
     print(key,end=":")
-    for item in cert_check[key].values():
-        print(item,end=":")
+    for f in fl:
+        print(cert_check[key][f],end=":")
     print("")
